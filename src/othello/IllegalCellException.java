@@ -3,5 +3,7 @@
  * It signifies that a location was not valid.
  */
 
+package othello;
+
 public class IllegalCellException extends Exception {}
 

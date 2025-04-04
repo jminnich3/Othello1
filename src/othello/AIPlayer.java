@@ -3,6 +3,8 @@
  * moves to the game of Othello and implements minimax with alpha-beta pruning
  */
 
+package othello;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;

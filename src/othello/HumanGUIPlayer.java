@@ -1,3 +1,5 @@
+package othello;
+
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;

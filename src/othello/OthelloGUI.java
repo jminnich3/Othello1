@@ -1,3 +1,5 @@
+package othello;
+
 /**
  * To run: java OthelloGUI
  */

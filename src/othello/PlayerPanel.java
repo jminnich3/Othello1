@@ -3,6 +3,8 @@
  * You should need to edit anything here.
  */
 
+package othello;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;

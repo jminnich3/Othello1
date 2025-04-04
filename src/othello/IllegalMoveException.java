@@ -4,5 +4,7 @@
  * legal move.
  */
 
+package othello;
+
 public class IllegalMoveException extends Exception {}
 

@@ -1,3 +1,6 @@
+
+package othello;
+
 import java.io.FileWriter;
 import java.io.*;
 import java.util.Vector;
@@ -62,7 +65,7 @@ class Tournament {
 			tournament = new Tournament(Long.MAX_VALUE);
 		}
 
-		Board board = new othello.BoardImplementation();
+		Board board = new BoardImplementation();
 		board.initBoard();
 
 		Vector<String> boardStrings = new Vector<>(100);

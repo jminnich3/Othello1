@@ -1,3 +1,5 @@
+package othello;
+
 /**
  * A simple Othello player which makes a random (legal) move.
  *

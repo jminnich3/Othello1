@@ -1,3 +1,5 @@
+package othello;
+
 import java.lang.*;
 
 /**

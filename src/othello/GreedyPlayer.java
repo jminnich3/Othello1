@@ -1,3 +1,5 @@
+package othello;
+
 /**
  * An Othello player which always makes the move which gets
  * it the most pieces.

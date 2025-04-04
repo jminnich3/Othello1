@@ -1,3 +1,5 @@
+package othello;
+
 /**
  * A thread that gets a move from a player,
  *   but with a time limit.

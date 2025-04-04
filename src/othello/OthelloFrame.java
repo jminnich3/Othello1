@@ -3,6 +3,8 @@
  * You should not need to edit anything here.
  */
 
+package othello;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;

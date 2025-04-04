@@ -39,6 +39,7 @@
  *  </center>
  */
 
+package othello;
 public interface Board {
 
     /**

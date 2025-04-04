@@ -3,6 +3,8 @@
  * You should not need to edit anything here.
  */
 
+package othello;
+
 public abstract class OthelloThread extends Thread {
 	private Board board;
 	private Player player1;
