@@ -41,15 +41,21 @@ public class MyPlayer extends othello.AIPlayer{
         return "minnichjs_chambersmg";
     }
 
+    /**
+     * calls a bunch of helper methods to get a score for the board
+     * @param board
+     * @return score of the given board
+     */
     @Override
-    public double evaluate(Board board) {
-        // Stop condition - if game is over
+    public double evaluate(Board board)
+    {
+        //do we need this stop condition or does the board class already handle this?
         if (board.getWinner() == Board.BLACK)
             return Double.MAX_VALUE;
         if (board.getWinner() == Board.WHITE)
             return -Double.MAX_VALUE;
-        if (board.getWinner() == Board.EMPTY && !board.hasLegalMove())
-            return 0; // Draw
+        if (board.getWinner() == Board.EMPTY && !hasLegalMoves(board))
+            return 0;
 
         double score = 0.0;
         int blackCount = 0;
@@ -57,55 +63,168 @@ public class MyPlayer extends othello.AIPlayer{
         int totalPieces = 0;
 
         // Count pieces and apply positional weights
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                try {
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                try
+                {
                     int cell = board.getCell(new int[]{x, y});
-                    if (cell == Board.BLACK) blackCount++;
-                    else if (cell == Board.WHITE) whiteCount++;
+                    if (cell == Board.BLACK)
+                        blackCount++;
+                    else if (cell == Board.WHITE)
+                        whiteCount++;
 
                     if (cell != Board.EMPTY) {
                         totalPieces++;
 
                         // Apply position-based weights
                         double positionValue = getPositionValue(x, y);
-                        if (cell == Board.BLACK) score += positionValue;
-                        else if (cell == Board.WHITE) score -= positionValue;
+                        if (cell == Board.BLACK)
+                            score += positionValue;
+                        else if (cell == Board.WHITE)
+                            score -= positionValue;
                     }
-                } catch (IllegalCellException e) {
+                }
+                catch (IllegalCellException e)
+                {
+                    System.err.println("Illegal cell exception: " + e.getMessage());
                     // This should not happen with valid coordinates
                 }
             }
         }
 
-        // Calculate piece count differential (more important later in game)
+        //calc piece count differential (this is gonna get more important later in the game)
+        //maxing your tiles early game doesn't do very much because they can easily get flipped
+        //maxing them late game is important tho, because you want to have max tiles when game ends
         double gameProgressFactor = totalPieces / 64.0;
         double pieceDiffScore = (blackCount - whiteCount) * gameProgressFactor * 10;
         score += pieceDiffScore;
 
-        // Mobility evaluation (less important later in game)
+        //mobility evaluation (less important later in game)
+        //this is checking what moves are available to the players
         int blackMobility = countLegalMoves(board, Board.BLACK);
         int whiteMobility = countLegalMoves(board, Board.WHITE);
         double mobilityScore = (blackMobility - whiteMobility) * (1 - gameProgressFactor) * 5;
         score += mobilityScore;
 
-        // Stability evaluation
+        //stability evaluation
+        //this is checking to see which pieces are unable to be changed
+        //this is really good in the game because you want guaranteed pieces
         int blackStable = countStablePieces(board, Board.BLACK);
         int whiteStable = countStablePieces(board, Board.WHITE);
         double stabilityScore = (blackStable - whiteStable) * 3;
         score += stabilityScore;
 
-        // Parity evaluation (for late game)
-        if (gameProgressFactor > 0.7) {
+        //parity evaluation (for late game)
+        //forcing opponent to make last move in the game is good
+        if (gameProgressFactor > 0.7)
+        {
             int emptySquares = 64 - totalPieces;
-            if (emptySquares % 2 == 1 && board.getCurrentPlayer() == Board.BLACK) {
+            if (emptySquares % 2 == 1 && board.getPlayer() == Board.BLACK)
+            {
                 score += 5;
-            } else if (emptySquares % 2 == 0 && board.getCurrentPlayer() == Board.WHITE) {
+            }
+            else if (emptySquares % 2 == 0 && board.getPlayer() == Board.WHITE)
+            {
                 score += 5;
             }
         }
 
         return score;
+    }
+
+    private double getPositionValue(int x, int y)
+    {
+        // Check for corners (EPIC!!!)
+        for (int[] corner : CORNERS)
+        {
+            if (corner[0] == x && corner[1] == y)
+            {
+                return CORNER_VALUE;
+            }
+        }
+
+        // Check for X-squares (really bad)
+        for (int[] xSquare : X_SQUARES)
+        {
+            if (xSquare[0] == x && xSquare[1] == y)
+            {
+                return X_SQUARE_PENALTY;
+            }
+        }
+
+        // Check for C-squares (bad)
+        for (int[] cSquare : C_SQUARES)
+        {
+            if (cSquare[0] == x && cSquare[1] == y)
+            {
+                return C_SQUARE_PENALTY;
+            }
+        }
+
+        // Check for edges (pretty good)
+        for (int[] edge : EDGES)
+        {
+            if (edge[0] == x && edge[1] == y)
+            {
+                return EDGE_VALUE;
+            }
+        }
+
+        // Regular squares
+        return 1.0;
+    }
+
+    private int countLegalMoves(Board board, int player)
+    {
+        int count = 0;
+        int originalPlayer = board.getPlayer();
+
+        // If checking moves for the non-current player, create a board with that player's turn
+        Board testBoard = board;
+        if (originalPlayer != player) {
+            testBoard = board.getClone();
+            // Try to set the player (this might not directly work with the Board implementation)
+            // This is a conceptual example - you might need to adapt this
+            try {
+                // Skip moves until it's the desired player's turn
+                while (testBoard.getPlayer() != player) {
+                    // If no legal moves, we can't force the turn to change
+                    if (!hasLegalMoves(testBoard)) {
+                        return 0;
+                    }
+                    // Make a pass move or any legal move
+                    for (int x = 0; x < 8; x++) {
+                        for (int y = 0; y < 8; y++) {
+                            int[] move = {x, y};
+                            if (testBoard.isLegalMove(move)) {
+                                testBoard.makeMove(move);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // If we can't successfully switch players, return a default value
+                return 5; // Arbitrary middle value
+            }
+        }
+
+        // Count legal moves
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                try {
+                    if (testBoard.isLegalMove(new int[]{x, y})) {
+                        count++;
+                    }
+                } catch (Exception e) {
+                    // This should not happen with valid coordinates
+                }
+            }
+        }
+
+        return count;
     }
 
     public void getNextMove(Board board, int[] bestMove) throws IllegalCellException, IllegalMoveException
@@ -211,8 +330,8 @@ public class MyPlayer extends othello.AIPlayer{
         return 0;
     }
 
-    public boolean countStablePieces(Board board, Board.color){
-        return false;
+    public int countStablePieces(Board board, int color){
+        return 0;
     }
 
 
