@@ -428,18 +428,6 @@ public class MyPlayer extends othello.AIPlayer{
         return false;
     }
 
-    public int pieceCountDifferential(Board board, int[] move){
-        return 0;
-    }
-
-    public int mobility(){
-        return 0;
-    }
-
-    public int getPositionalValue(){
-        return 0;
-    }
-
     public int countStablePieces(Board board, int color){
         return 0;
     }
