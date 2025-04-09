@@ -183,43 +183,63 @@ public class MyPlayer extends othello.AIPlayer{
 
         // If checking moves for the non-current player, create a board with that player's turn
         Board testBoard = board;
-        if (originalPlayer != player) {
+        if (originalPlayer != player)
+        {
+            //gotta make a copy so we dont affect the game
             testBoard = board.getClone();
-            // Try to set the player (this might not directly work with the Board implementation)
-            // This is a conceptual example - you might need to adapt this
-            try {
-                // Skip moves until it's the desired player's turn
-                while (testBoard.getPlayer() != player) {
-                    // If no legal moves, we can't force the turn to change
-                    if (!hasLegalMoves(testBoard)) {
+            try
+            {
+                //skip moves until it's the desired player's turn
+                while (testBoard.getPlayer() != player)
+                {
+                    //super weird edge case where the player has no legal moves
+                    //if no legal moves, we can't force the turn to change
+                    if (!hasLegalMoves(testBoard))
+                    {
                         return 0;
                     }
-                    // Make a pass move or any legal move
-                    for (int x = 0; x < 8; x++) {
-                        for (int y = 0; y < 8; y++) {
+                    //make a pass move or any legal move
+                    //just be done at the first one we find
+                    //TODO: maybe implement greedy decision here? Instead of just first option?
+                        //I doubt it's worth the extra runtime
+                    for (int x = 0; x < 8; x++)
+                    {
+                        for (int y = 0; y < 8; y++)
+                        {
                             int[] move = {x, y};
-                            if (testBoard.isLegalMove(move)) {
+                            if (testBoard.isLegalMove(move))
+                            {
+                                //the current player makes the first move it finds
                                 testBoard.makeMove(move);
                                 break;
                             }
                         }
                     }
                 }
-            } catch (Exception e) {
-                // If we can't successfully switch players, return a default value
-                return 5; // Arbitrary middle value
+            }
+            catch (Exception e)
+            {
+                //if we can't successfully switch players, return a default value
+                return 5; //idk, some arbitrary middle value
             }
         }
 
-        // Count legal moves
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                try {
-                    if (testBoard.isLegalMove(new int[]{x, y})) {
+        //count legal moves
+        //this chunk of code will run for either currPlayer OR opponent
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                try
+                {
+                    if (testBoard.isLegalMove(new int[]{x, y}))
+                    {
                         count++;
                     }
-                } catch (Exception e) {
-                    // This should not happen with valid coordinates
+                }
+                catch (Exception e)
+                {
+                    //this should not happen with valid coordinates
                 }
             }
         }
@@ -305,7 +325,7 @@ public class MyPlayer extends othello.AIPlayer{
                         }
                         else{
                             int[] stubMove = new int[2];
-                            score = minimax(nextBoard, depthLimit - 1, false, stubMove, numNodesExplored)
+                            score = minimax(nextBoard, depthLimit - 1, false, stubMove, numNodesExplored);
                         }
 
                         // if its a max node, replace if it's greater than the best score
