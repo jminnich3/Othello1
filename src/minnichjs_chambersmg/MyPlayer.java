@@ -111,10 +111,11 @@ public class MyPlayer extends othello.AIPlayer{
         //stability evaluation
         //this is checking to see which pieces are unable to be changed
         //this is really good in the game because you want guaranteed pieces
-        int blackStable = countStablePieces(board, Board.BLACK);
-        int whiteStable = countStablePieces(board, Board.WHITE);
-        double stabilityScore = (blackStable - whiteStable) * 3;
-        score += stabilityScore;
+        //TODO: come back to this
+//        int blackStable = countStablePieces(board, Board.BLACK);
+//        int whiteStable = countStablePieces(board, Board.WHITE);
+//        double stabilityScore = (blackStable - whiteStable) * 3;
+//        score += stabilityScore;
 
         //parity evaluation (for late game)
         //forcing opponent to make last move in the game is good
@@ -313,8 +314,8 @@ public class MyPlayer extends othello.AIPlayer{
             for (int j = 0; j < 8; j++) {
                 int[] move = {i, j};
                 try {
-                    if (board.isLegalMove(move)) {
-                        Board nextBoard = board.getClone();
+                    Board nextBoard = board.getClone();
+                    if (nextBoard.isLegalMove(move)) {
                         nextBoard.makeMove(move);
 
                         double score = 0.0;
@@ -344,7 +345,7 @@ public class MyPlayer extends othello.AIPlayer{
 
         }
         // if we found a valid move, update best move
-        if(currentBestMove[0] != -1 ){
+        if(currentBestMove[0] != -1 && board.isLegalMove(currentBestMove)){
             bestMove[0] = currentBestMove[0];
             bestMove[1] = currentBestMove[1];
         }
@@ -381,8 +382,8 @@ public class MyPlayer extends othello.AIPlayer{
             for (int j = 0; j < 8; j++) {
                 int[] move = {i, j};
                 try {
-                    if (board.isLegalMove(move)) {
-                        Board nextBoard = board.getClone();
+                    Board nextBoard = board.getClone();
+                    if (nextBoard.isLegalMove(move)) {
                         nextBoard.makeMove(move);
 
                         double score = alphaBeta(nextBoard, depth-1, alpha, beta, numNodesExplored);
@@ -393,7 +394,7 @@ public class MyPlayer extends othello.AIPlayer{
                         }
                         else{
                             bestScore = Math.min(bestScore, score);
-                            beta = Math.min(alpha, score);
+                            beta = Math.min(beta, score);
                         }
 
                         // prune branches
@@ -420,14 +421,20 @@ public class MyPlayer extends othello.AIPlayer{
             for (int j = 0; j < 8; j++) {
                 move[0] = i;
                 move[1] = j;
-                if(board.isLegalMove(move)){
-                    return true;
+                try {
+                    if(board.isLegalMove(move)){
+                        return true;
+                    }
+                } catch (Exception e) {
+                    System.out.println("uh oh");
+                    // Handle or log exception
                 }
             }
         }
         return false;
     }
 
+    //TODO: implement this???
     public int countStablePieces(Board board, int color){
         return 0;
     }

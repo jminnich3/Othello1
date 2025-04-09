@@ -52,6 +52,19 @@ public abstract class OthelloThread extends Thread {
 			ice.printStackTrace();
 			System.exit(-1);
 		} catch (IllegalMoveException ime) {
+			System.out.println("Player: " + board.getPlayer() + " tried playing " + move[0] + "," + move[1]);
+			try {
+				System.out.println("And position: " + move[0] + "," + move[1] + " has value: " + board.getCell(move));
+				System.out.println("Is it a legal move? " + board.isLegalMove(move));
+			} catch (IllegalCellException ice) {
+				System.out.println ("Got IllegalCellException in game");
+				ice.printStackTrace();
+				System.exit(-1);
+			} catch (Exception e) {
+				System.out.println ("Got Exception in game");
+				e.printStackTrace();
+				System.exit(-1);
+			}
 			System.out.println ("Got IllegalMovelException in game");
 			ime.printStackTrace();
 			System.exit(-1);
