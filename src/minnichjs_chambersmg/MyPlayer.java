@@ -424,5 +424,18 @@ public class MyPlayer extends othello.AIPlayer{
         return 0;
     }
 
-
+    public int countTotalPieces(Board board) throws IllegalCellException {
+        int count = 0;
+        int[] move = {-1, -1};
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                move[0] = i;
+                move[1] = j;
+                if(board.getCell(move) != Board.EMPTY){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 }
